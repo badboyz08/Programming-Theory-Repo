@@ -5,12 +5,12 @@ using UnityEngine;
 public class Characters : MonoBehaviour
 {
     //behave
-    private bool toDo;
-    private string doWhat;
+    private Vector3 outOfBound = new Vector3(40f,0f,25f);
 
-    private float walkSpeed = 3;
-    private int randomNegative=2;
-    
+
+    public float walkSpeed { get; private set; } = 10; // ENCAPSULATION
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -21,40 +21,72 @@ public class Characters : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-            StartCoroutine(WaitThenDo());
+        Walk(); // ABSTRACTION
     }
 
-    IEnumerator WaitThenDo()
+    IEnumerator Wait()
     {
-        yield return new WaitForSeconds(2);
-        
+        yield return new WaitForSecondsRealtime(1);
     }
 
-    int CreateRandomNegative()
+    void Jump()
+    {
+        transform.Translate(Vector3.up * 2 * Time.deltaTime);
+    }
+
+
+    public virtual void OutOfBound(Vector3 bound)// POLYMORPHISM
     {
         
-        if(randomNegative == 2)
+        if (bound.x < -outOfBound.x)
         {
-            randomNegative = -2;
-        }else if(randomNegative == -2)
-        {
-            randomNegative = 2;
+            Debug.Log("out of bound" + bound);
+            transform.Rotate(0f, 45f, 0f);
+            Jump();
         }
-        return randomNegative;
+        else if (bound.z < -outOfBound.z)
+        {
+            Debug.Log("out of bound" + bound);
+            transform.Rotate(0f, 45f, 0f);
+            Jump();
+        }
+        else if (bound.x > outOfBound.x)
+        {
+            Debug.Log("out of bound" + bound);
+            transform.Rotate(0f, 45f, 0f);
+            Jump();
+        }
+        else if (bound.z > outOfBound.z)
+        {
+            Debug.Log("out of bound" + bound);
+            transform.Rotate(0f, 45f, 0f);
+            Jump();
+        }
+        
     }
 
-    void RotateSelf()
+    public virtual void OutOfBound(Collider collider)// POLYMORPHISM
     {
-        transform.Rotate(0f, Random.Range(90f,180f) * Time.deltaTime * CreateRandomNegative(), 0f);
+        
+        if (collider.CompareTag("Wall"))
+        {
+            Debug.Log("HIT WALL");
+            transform.Rotate(0f, Random.Range(135, 180), 0f);
+        }
+        
     }
 
-    void Walk()
+    public void Walk()
     {
         transform.Translate(0, 0, walkSpeed * Time.deltaTime);
+        OutOfBound(transform.position);
     }
+
+    
 
     void DoStuff()
     {
+        
 
     }
 
@@ -62,4 +94,5 @@ public class Characters : MonoBehaviour
     {
 
     }
+
 }
